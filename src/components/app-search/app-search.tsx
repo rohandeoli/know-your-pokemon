@@ -27,6 +27,7 @@ export default function AppSearch(props: { setSearchResult: any }) {
     };
 
     const handleKeyPress = (e) => {
+        console.log('Key pressed:', e.key);
         if (e.key === 'Enter') {
             handleSearch();
         }

@@ -10,20 +10,20 @@ import {
 } from "@/components/ui/sheet"
 import Pokemon from "@/components/pokemon/pokemon.tsx";
 
-export default function AppSearchSheet({searchSheetOpen, setSearchSheetOpen, pokemon}: {
+export default function AppSearchSheet({searchSheetOpen, setSearchSheetOpen, pokemon, error}: {
     searchSheetOpen: boolean,
     setSearchSheetOpen: (open: boolean) => void,
-    pokemon: any
+    pokemon: any,
+    error?: { status?: number, message?: string }
 }) {
 
     function closeSheet() {
-        searchSheetOpen = false;
+        // searchSheetOpen = false;
         setSearchSheetOpen(false)
-        console.log('close')
     }
 
     return (
-        <Sheet open={searchSheetOpen} onOpenChange={() => setSearchSheetOpen(true)}>
+        <Sheet open={searchSheetOpen} onOpenChange={setSearchSheetOpen}>
             {/*<SheetTrigger asChild>*/}
             {/*    <Button variant="outline">Open</Button>*/}
             {/*</SheetTrigger>*/}
@@ -45,7 +45,21 @@ export default function AppSearchSheet({searchSheetOpen, setSearchSheetOpen, pok
                 {/*    </div>*/}
                 {/*</div>*/}
                 <div className="grid w-full flex-1 auto-rows-min gap-6 px-4">
-                    <Pokemon pokemon={pokemon}/>
+                    {/*<Pokemon pokemon={pokemon} isSearch={true}/>*/}
+                    {error?.status === 404 ? (
+                        <div className="flex items-center justify-center h-full">
+                            <p className="text-lg text-gray-500">No results found</p>
+                        </div>
+                    ) : error ? (
+                        <div className="flex items-center justify-center h-full">
+                            <p className="text-lg text-red-500">
+                                {error.message || 'An error occurred while fetching the results'}
+                            </p>
+                        </div>
+                    ) : (
+                        <Pokemon pokemon={pokemon} isSearch={true}/>
+                    )}
+
                 </div>
                 <SheetFooter>
                     {/*<Button type="submit">Save changes</Button>*/}

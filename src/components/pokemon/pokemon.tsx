@@ -4,10 +4,15 @@ import {Fullscreen} from "lucide-react";
 import {useEffect, useState} from "react";
 import {getPokemon} from "@/api/pokemon.api.ts";
 import {Badge} from "@/components/ui/badge.tsx";
+import {useNavigate} from "react-router";
+import {usePokemonDataContext} from "@/components/context/pokemon-data-provider.tsx";
 
-const IconButton = () => {
+const IconButton = (props: any) => {
+    const {navigate, pokemon, setData} = props;
+
     const handleClick = () => {
-        alert("Icon clicked!");
+        setData(pokemon);
+        navigate(`/pokemon/${pokemon.name}`);
     };
 
     return (
@@ -26,6 +31,9 @@ const IconButton = () => {
 export default function Pokemon(props: { pokemon: any, isSearch?: boolean }) {
     const {pokemon, isSearch} = props;
     const [pokeData, setPokeData] = useState<any>({});
+    const navigate = useNavigate();
+    const {updateData} = usePokemonDataContext();
+
     useEffect(() => {
         const fetchPokemon = async () => {
             try {
@@ -46,7 +54,7 @@ export default function Pokemon(props: { pokemon: any, isSearch?: boolean }) {
                 <CardHeader className="flex items-center justify-between">
                     <CardTitle>{pokemon.name}</CardTitle>
                     <CardAction>
-                        <IconButton/>
+                        <IconButton navigate={navigate} pokemon={pokeData} setData={updateData}/>
                     </CardAction>
                 </CardHeader>
                 <CardContent className="h-[200px] flex items-center justify-center">

@@ -14,19 +14,20 @@ const Input = forwardRef(({className, type, ...props}, ref) => {
     )
 });
 
-export default function AppSearch(props: { setPokemonList: any }) {
-    const {setPokemonList} = props;
+export default function AppSearch(props: { setSearchResult: any }) {
+    const {setSearchResult} = props;
     const [searchValue, setSearchValue] = useState('');
 
     const handleSearch = async () => {
         console.log('Searching for:', searchValue);
         const searchQuery = searchValue.trim();
         const result = await getPokemon(searchQuery);
-        // setPokemonList(result);
+        setSearchResult(result);
         // Add your search logic here
     };
 
     const handleKeyPress = (e) => {
+        console.log('Key pressed:', e.key);
         if (e.key === 'Enter') {
             handleSearch();
         }
@@ -47,6 +48,7 @@ export default function AppSearch(props: { setPokemonList: any }) {
                                     value={searchValue}
                                     onChange={(e) => setSearchValue(e.target.value)}
                                     className="pl-10"
+                                    onKeyPress={(e) => handleKeyPress(e)}
                                 />
                             </div>
                             <button

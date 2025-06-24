@@ -23,8 +23,8 @@ const IconButton = () => {
 };
 
 
-export default function Pokemon(props: { pokemon: any }) {
-    const {pokemon} = props;
+export default function Pokemon(props: { pokemon: any, isSearch?: boolean }) {
+    const {pokemon, isSearch} = props;
     const [pokeData, setPokeData] = useState<any>({});
     useEffect(() => {
         const fetchPokemon = async () => {
@@ -42,7 +42,7 @@ export default function Pokemon(props: { pokemon: any }) {
     return (
         <>
             <Card
-                className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer">
+                className={`w-full ${isSearch ? '' : 'sm:w-1/2 md:w-1/3 lg:w-1/4'} transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer`}>
                 <CardHeader className="flex items-center justify-between">
                     <CardTitle>{pokemon.name}</CardTitle>
                     <CardAction>

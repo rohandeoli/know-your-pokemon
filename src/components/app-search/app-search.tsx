@@ -3,9 +3,9 @@ import {type KeyboardEvent, useState} from "react";
 import {Search} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
 
-export default function AppSearch(props: { onSearch: (query: string) => void }) {
-    const {onSearch} = props;
-    const [searchValue, setSearchValue] = useState('');
+export default function AppSearch(props: { onSearch: (query: string) => void, defaultQuery?: string }) {
+    const {onSearch, defaultQuery} = props;
+    const [searchValue, setSearchValue] = useState(defaultQuery ?? '');
 
     const submit = () => {
         const query = searchValue.trim().toLowerCase();

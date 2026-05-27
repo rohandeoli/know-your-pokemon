@@ -5,10 +5,11 @@ import {useNavigate} from "react-router";
 import {Badge} from "@/components/ui/badge.tsx";
 import {usePokemon} from "@/hooks/pokemon-queries.ts";
 import {pokemonSprite} from "@/lib/utils.ts";
+import {Skeleton} from "@/components/ui/skeleton.tsx";
 
 export default function Pokemon(props: { pokemon: { name: string }, isSearch?: boolean }) {
     const {pokemon, isSearch} = props;
-    const {data: pokeData} = usePokemon(pokemon.name);
+    const {data: pokeData, isLoading} = usePokemon(pokemon.name);
     const navigate = useNavigate();
 
     const handleOpen = () => {
@@ -34,23 +35,33 @@ export default function Pokemon(props: { pokemon: { name: string }, isSearch?: b
                 </CardAction>
             </CardHeader>
             <CardContent className="h-[200px] flex items-center justify-center">
-                {sprite ? (
+                {isLoading ? (
+                    <Skeleton className="h-[150px] w-[150px]"/>
+                ) : sprite ? (
                     <img
                         src={sprite}
                         alt={pokemon.name}
+                        loading="lazy"
                         className="max-h-[180px] w-auto object-contain"
                     />
                 ) : (
                     <span className="text-sm text-muted-foreground">No image</span>
                 )}
             </CardContent>
-            <CardFooter className="flex-row">
-                {pokeData?.types?.map((type) => (
-                    <Badge key={type.type.name} variant={type.slot === 1 ? 'default' : 'outline'}
-                           className="mr-2 capitalize">
-                        {type.type.name}
-                    </Badge>
-                ))}
+            <CardFooter className="flex-row gap-2">
+                {isLoading ? (
+                    <>
+                        <Skeleton className="h-5 w-12 rounded-full"/>
+                        <Skeleton className="h-5 w-12 rounded-full"/>
+                    </>
+                ) : (
+                    pokeData?.types?.map((type) => (
+                        <Badge key={type.type.name} variant={type.slot === 1 ? 'default' : 'outline'}
+                               className="capitalize">
+                            {type.type.name}
+                        </Badge>
+                    ))
+                )}
             </CardFooter>
         </Card>
     );

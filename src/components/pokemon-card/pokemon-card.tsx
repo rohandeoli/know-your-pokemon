@@ -1,5 +1,6 @@
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.tsx";
 import {Badge} from "@/components/ui/badge.tsx";
+import {Skeleton} from "@/components/ui/skeleton.tsx";
 import {pokemonSprite} from "@/lib/utils.ts";
 import type {Pokemon, PokemonSpecies} from "@/model/pokemon.ts";
 
@@ -22,14 +23,47 @@ function englishGenus(species: PokemonSpecies | null): string {
     return species?.genera?.find((g) => g.language.name === "en")?.genus ?? "";
 }
 
+export function PokemonCardSkeleton() {
+    return (
+        <Card className="w-[95%] mx-auto mt-10">
+            <CardContent className="flex flex-row flex-wrap gap-4">
+                <Card className="w-full md:w-[30%]">
+                    <CardHeader>
+                        <Skeleton className="h-6 w-32"/>
+                        <Skeleton className="mt-2 h-4 w-24"/>
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="mx-auto h-[220px] w-[220px]"/>
+                        <div className="mt-8 flex gap-2">
+                            <Skeleton className="h-6 w-16 rounded-full"/>
+                            <Skeleton className="h-6 w-16 rounded-full"/>
+                        </div>
+                        <Skeleton className="mt-8 h-4 w-28"/>
+                        <Skeleton className="mt-2 h-4 w-28"/>
+                    </CardContent>
+                </Card>
+                <Card className="w-full md:flex-1">
+                    <CardContent className="space-y-8 pt-6">
+                        <div className="space-y-2">
+                            <Skeleton className="h-5 w-32"/>
+                            <Skeleton className="h-4 w-full"/>
+                            <Skeleton className="h-4 w-5/6"/>
+                        </div>
+                        <div className="space-y-2">
+                            <Skeleton className="h-5 w-24"/>
+                            {Array.from({length: 6}).map((_, i) => (
+                                <Skeleton key={i} className="h-3 w-full"/>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            </CardContent>
+        </Card>
+    );
+}
+
 export default function PokemonCard({data, species}: { data: Pokemon | null, species: PokemonSpecies | null }) {
-    if (!data) {
-        return (
-            <Card className="w-[95%] mx-auto mt-10">
-                <CardContent className="py-16 text-center text-muted-foreground">Loading…</CardContent>
-            </Card>
-        );
-    }
+    if (!data) return null;
 
     const sprite = pokemonSprite(data);
     const description = englishFlavorText(species);

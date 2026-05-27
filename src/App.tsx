@@ -5,6 +5,8 @@ import {createElement, lazy, Suspense} from "react";
 import {QueryClientProvider} from "@tanstack/react-query";
 import Home from "@/pages/Home/Home.tsx";
 import Pokemon from "@/pages/pokemon/Pokemon.tsx";
+import ComingSoon from "@/pages/ComingSoon/ComingSoon.tsx";
+import NotFound from "@/pages/NotFound/NotFound.tsx";
 import {queryClient} from "@/lib/query-client.ts";
 
 // Dev-only: the dynamic import is dead code in production builds, so the
@@ -33,6 +35,9 @@ function App() {
                               element={createElement(route.component, {})}
                           />
                       ))}
+                      <Route path="/items" element={<ComingSoon title="Items"/>}/>
+                      <Route path="/games" element={<ComingSoon title="Games"/>}/>
+                      <Route path="*" element={<NotFound/>}/>
                   </Routes>
               </BrowserRouter>
               <Suspense>

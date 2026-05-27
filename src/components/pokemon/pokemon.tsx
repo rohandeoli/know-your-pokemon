@@ -1,28 +1,17 @@
 import {Card, CardAction, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {Fullscreen} from "lucide-react";
-import {useEffect, useState} from "react";
-import {getPokemon} from "@/api/pokemon.api.ts";
-import {Badge} from "@/components/ui/badge.tsx";
 import {useNavigate} from "react-router";
-import {usePokemonDataContext} from "@/components/context/pokemon-data-provider.tsx";
+import {Badge} from "@/components/ui/badge.tsx";
+import {usePokemon} from "@/hooks/pokemon-queries.ts";
 import {pokemonSprite} from "@/lib/utils.ts";
-import type {Pokemon as PokemonModel} from "@/model/pokemon.ts";
 
 export default function Pokemon(props: { pokemon: { name: string }, isSearch?: boolean }) {
     const {pokemon, isSearch} = props;
-    const [pokeData, setPokeData] = useState<PokemonModel | null>(null);
+    const {data: pokeData} = usePokemon(pokemon.name);
     const navigate = useNavigate();
-    const {updateData} = usePokemonDataContext();
-
-    useEffect(() => {
-        getPokemon(pokemon.name)
-            .then(setPokeData)
-            .catch((error) => console.error("Error fetching Pokemon:", error));
-    }, [pokemon.name]);
 
     const handleOpen = () => {
-        updateData(pokeData);
         navigate(`/pokemon/${pokemon.name}`);
     };
 

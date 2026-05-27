@@ -1,54 +1,55 @@
-# React + TypeScript + Vite
+# Know Your Pokémon
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React single-page app for browsing and searching Pokémon, backed by the public [PokéAPI](https://pokeapi.co/). Browse a paginated list, search a Pokémon by name, and open a detail view with its sprite, types, height/weight, base stats, abilities, and Pokédex entry. Light/dark theme included.
 
-Currently, two official plugins are available:
+## Tech stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** + **TypeScript** + **Vite 6**
+- **Tailwind CSS v4** (configured in `src/index.css`, no `tailwind.config`) with **shadcn/ui** components
+- **react-router v7** for routing
+- **TanStack Query v5** as the data/cache layer
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Node.js 20+ and npm
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Setup
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Create a `.env` file pointing at the PokéAPI base URL:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+VITE_API_URL=https://pokeapi.co/api/v2
 ```
+
+This variable is required — all API calls read `import.meta.env.VITE_API_URL`.
+
+## Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start the Vite dev server |
+| `npm run build` | Type-check (`tsc -b`) then build for production |
+| `npm run lint` | Run ESLint |
+| `npm run preview` | Serve the production build locally |
+
+## Project structure
+
+```
+src/
+  api/         PokéAPI fetch wrappers + ApiError
+  hooks/       TanStack Query hooks (usePokemonList, usePokemon, usePokemonSpecies)
+  model/       Domain types (Pokemon, PokemonSpecies, PokemonList)
+  lib/         Shared helpers (cn, pokemonSprite) and the configured QueryClient
+  components/  Feature components + shadcn primitives (components/ui)
+  pages/       Route pages (Home, Pokemon detail)
+```
+
+Data flows through query hooks rather than ad-hoc fetches; the list card and the detail page share a cache key, so opening a Pokémon you've already seen is instant. See `CLAUDE.md` for a deeper architecture overview.
+
+## Deployment
+
+This is a client-side SPA using `BrowserRouter`. When deploying, configure your host to rewrite all routes to `index.html` so deep links like `/pokemon/25` resolve.

@@ -1,34 +1,21 @@
 import "./app-search.css";
 import {type KeyboardEvent, useState} from "react";
 import {Search} from "lucide-react";
-import {ApiError, getPokemon} from "@/api/pokemon.api.ts";
 import {Input} from "@/components/ui/input.tsx";
-import type {Pokemon} from "@/model/pokemon.ts";
 
-export type SearchError = { status?: number, message?: string };
-
-export default function AppSearch(props: { onSearch: (result: Pokemon | null, error: SearchError | null) => void }) {
+export default function AppSearch(props: { onSearch: (query: string) => void }) {
     const {onSearch} = props;
     const [searchValue, setSearchValue] = useState('');
 
-    const handleSearch = async () => {
+    const submit = () => {
         const query = searchValue.trim().toLowerCase();
         if (!query) return;
-        try {
-            const result = await getPokemon(query);
-            onSearch(result, null);
-        } catch (error) {
-            if (error instanceof ApiError) {
-                onSearch(null, {status: error.status, message: error.message});
-            } else {
-                onSearch(null, {message: "An error occurred while fetching the results"});
-            }
-        }
+        onSearch(query);
     };
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            handleSearch();
+            submit();
         }
     };
 
@@ -49,7 +36,7 @@ export default function AppSearch(props: { onSearch: (result: Pokemon | null, er
                         />
                     </div>
                     <button
-                        onClick={handleSearch}
+                        onClick={submit}
                         className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
                         Search

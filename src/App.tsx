@@ -1,10 +1,17 @@
 import './App.css';
 import {ThemeProvider} from "@/components/context/theme-provider.tsx";
 import {BrowserRouter, Route, Routes} from "react-router";
-import {createElement} from "react";
+import {createElement, lazy, Suspense} from "react";
+import {QueryClientProvider} from "@tanstack/react-query";
 import Home from "@/pages/Home/Home.tsx";
 import Pokemon from "@/pages/pokemon/Pokemon.tsx";
-import {PokemonDataProvider} from "@/components/context/pokemon-data-provider.tsx";
+import {queryClient} from "@/lib/query-client.ts";
+
+// Dev-only: the dynamic import is dead code in production builds, so the
+// devtools are tree-shaken out of the shipped bundle.
+const ReactQueryDevtools = import.meta.env.DEV
+    ? lazy(() => import("@tanstack/react-query-devtools").then((m) => ({default: m.ReactQueryDevtools})))
+    : () => null;
 
 const routeConfig = [
     {path: "/", component: Home},
@@ -16,7 +23,7 @@ function App() {
 
   return (
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <PokemonDataProvider>
+          <QueryClientProvider client={queryClient}>
               <BrowserRouter>
                   <Routes>
                       {routeConfig.map((route) => (
@@ -28,15 +35,10 @@ function App() {
                       ))}
                   </Routes>
               </BrowserRouter>
-          </PokemonDataProvider>
-          {/*{children}*/}
-          {/*<>*/}
-          {/*    <h1>Hello World</h1>*/}
-          {/*    <div className="flex flex-wrap items-center gap-2 md:flex-row">*/}
-          {/*        <Button variant={"default"}>Button</Button>*/}
-          {/*        <ModeToggle/>*/}
-          {/*    </div>*/}
-          {/*</>*/}
+              <Suspense>
+                  <ReactQueryDevtools initialIsOpen={false}/>
+              </Suspense>
+          </QueryClientProvider>
       </ThemeProvider>
   )
 }

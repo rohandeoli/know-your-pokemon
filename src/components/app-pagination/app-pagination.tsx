@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {ChevronLeft, ChevronRight} from 'lucide-react';
 
-export default function AppPagination(props: any) {
+export default function AppPagination(props: { total: number, onPageChange: (page: number, pageSize: number) => void }) {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(20);
 
@@ -11,7 +11,7 @@ export default function AppPagination(props: any) {
     const totalItems = total;
     const totalPages = Math.ceil(totalItems / pageSize);
 
-    const handlePageClick = (page) => {
+    const handlePageClick = (page: number) => {
         setCurrentPage(page);
         // This is where you would call your custom method
         console.log(`Page ${page} clicked with page size ${pageSize}`);
@@ -31,7 +31,7 @@ export default function AppPagination(props: any) {
         }
     };
 
-    const handlePageSizeChange = (newSize) => {
+    const handlePageSizeChange = (newSize: number) => {
         setPageSize(newSize);
         // Reset to page 1 when changing page size
         setCurrentPage(1);

@@ -1,42 +1,38 @@
 import {usePokemonDataContext} from "@/components/context/pokemon-data-provider.tsx";
 import AppHeader from "@/components/app-header/app-header.tsx";
 import {useParams} from "react-router";
-import {getPokemon} from "@/api/pokemon.api.ts";
-import {useEffect} from "react";
+import {getPokemon, getPokemonSpecies} from "@/api/pokemon.api.ts";
+import {useEffect, useState} from "react";
 import PokemonCard from "@/components/pokemon-card/pokemon-card.tsx";
-
-const getPokemonDataFromName = async (params) => {
-
-    const name = params.id || '';
-    const res = await getPokemon(name);
-    return res;
-}
+import type {PokemonSpecies} from "@/model/pokemon.ts";
 
 export default function Pokemon() {
 
     const {data, updateData} = usePokemonDataContext();
     const params = useParams();
+    const [species, setSpecies] = useState<PokemonSpecies | null>(null);
 
+    // Fetch the Pokémon when it wasn't handed off via context (e.g. direct link / refresh).
     useEffect(() => {
-        const fetchData = async () => {
-            if (!data) {
-                try {
-                    const result = await getPokemonDataFromName(params);
-                    updateData(result); // Update the context with the fetched data
-                } catch (error) {
-                    console.error('Error fetching Pokemon:', error);
-                }
-            }
-        };
+        if (data) return;
+        getPokemon(params.id ?? "")
+            .then(updateData)
+            .catch((error) => console.error("Error fetching Pokemon:", error));
+    }, [data, params.id, updateData]);
 
-        fetchData();
-    }, [data, params]); // Dependencies array
+    // Species carries the Pokédex flavor text and genus.
+    useEffect(() => {
+        const speciesName = data?.species?.name;
+        if (!speciesName) return;
+        getPokemonSpecies(speciesName)
+            .then(setSpecies)
+            .catch((error) => console.error("Error fetching species:", error));
+    }, [data?.species?.name]);
 
-    console.log(data);
     return (
         <>
             <AppHeader/>
-            <PokemonCard data={data}/>
+            <PokemonCard data={data} species={species}/>
         </>
     );
-};
+}

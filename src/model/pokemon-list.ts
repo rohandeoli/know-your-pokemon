@@ -5,7 +5,7 @@ export interface PokemonList {
     results: Result[] | null;
 }
 
-interface Result {
+export interface Result {
     name: string;
     url: string;
 }

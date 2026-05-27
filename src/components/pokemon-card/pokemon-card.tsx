@@ -1,41 +1,121 @@
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.tsx";
 import {Badge} from "@/components/ui/badge.tsx";
+import {pokemonSprite} from "@/lib/utils.ts";
+import type {Pokemon, PokemonSpecies} from "@/model/pokemon.ts";
 
-export default function PokemonCard({data}: any) {
-    return (
-        <>
+const STAT_LABELS: Record<string, string> = {
+    "hp": "HP",
+    "attack": "Attack",
+    "defense": "Defense",
+    "special-attack": "Sp. Atk",
+    "special-defense": "Sp. Def",
+    "speed": "Speed",
+};
+
+// PokéAPI flavor text is padded with form-feed / newline control characters.
+function englishFlavorText(species: PokemonSpecies | null): string {
+    const entry = species?.flavor_text_entries?.find((e) => e.language.name === "en");
+    return entry ? entry.flavor_text.replace(/[\n\f\r]+/g, " ") : "";
+}
+
+function englishGenus(species: PokemonSpecies | null): string {
+    return species?.genera?.find((g) => g.language.name === "en")?.genus ?? "";
+}
+
+export default function PokemonCard({data, species}: { data: Pokemon | null, species: PokemonSpecies | null }) {
+    if (!data) {
+        return (
             <Card className="w-[95%] mx-auto mt-10">
-                <CardContent className="flex flex-row flex-wrap gap-2">
-                    <Card className="w-[30%]">
-                        <CardHeader>
-                            <CardTitle>{data?.name}</CardTitle>
-                            <CardDescription>
-                                #{data?.id}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <img src={data?.sprites?.other.dream_world.front_default} alt={data?.name}/>
-                            <div className={"mt-8"}>
-                                {data?.types?.map((type: any, index: number) => {
-                                    return <Badge variant={index == 0 ? 'default' : 'outline'}
-                                                  className="mr-2">{type.type.name}</Badge>
+                <CardContent className="py-16 text-center text-muted-foreground">Loading…</CardContent>
+            </Card>
+        );
+    }
+
+    const sprite = pokemonSprite(data);
+    const description = englishFlavorText(species);
+    const genus = englishGenus(species);
+
+    return (
+        <Card className="w-[95%] mx-auto mt-10">
+            <CardContent className="flex flex-row flex-wrap gap-4">
+                {/* Identity */}
+                <Card className="w-full md:w-[30%]">
+                    <CardHeader>
+                        <CardTitle className="capitalize">{data.name}</CardTitle>
+                        <CardDescription>
+                            #{data.id}{genus ? ` · ${genus}` : ""}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {sprite ? (
+                            <img src={sprite} alt={data.name} className="mx-auto max-h-[220px] w-auto object-contain"/>
+                        ) : (
+                            <div className="flex h-[220px] items-center justify-center text-muted-foreground">
+                                No image
+                            </div>
+                        )}
+                        <div className="mt-8 flex flex-wrap gap-2">
+                            {data.types?.map((type) => (
+                                <Badge key={type.type.name} variant={type.slot === 1 ? 'default' : 'outline'}
+                                       className="capitalize">
+                                    {type.type.name}
+                                </Badge>
+                            ))}
+                        </div>
+                        <div className="mt-8">
+                            <em className="font-bold">Height:</em> {data.height / 10} m
+                        </div>
+                        <div className="mt-2">
+                            <em className="font-bold">Weight:</em> {data.weight / 10} kg
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Pokédex entry, base stats, abilities */}
+                <Card className="w-full md:flex-1">
+                    <CardContent className="space-y-8 pt-6">
+                        {description && (
+                            <section>
+                                <h2 className="mb-2 text-lg font-semibold">Pokédex entry</h2>
+                                <p className="text-sm text-muted-foreground">{description}</p>
+                            </section>
+                        )}
+
+                        <section>
+                            <h2 className="mb-3 text-lg font-semibold">Base stats</h2>
+                            <div className="space-y-2">
+                                {data.stats?.map((stat) => {
+                                    const label = STAT_LABELS[stat.stat.name] ?? stat.stat.name;
+                                    const pct = Math.min(100, Math.round((stat.base_stat / 255) * 100));
+                                    return (
+                                        <div key={stat.stat.name} className="flex items-center gap-3">
+                                            <span className="w-16 shrink-0 text-sm text-muted-foreground">{label}</span>
+                                            <span className="w-8 shrink-0 text-right text-sm font-medium tabular-nums">
+                                                {stat.base_stat}
+                                            </span>
+                                            <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                                                <div className="h-full rounded-full bg-primary" style={{width: `${pct}%`}}/>
+                                            </div>
+                                        </div>
+                                    );
                                 })}
                             </div>
-                            <div className="mt-8">
-                                <em className={"font-bold"}>Height:</em> {data?.height / 10}m <br/>
+                        </section>
+
+                        <section>
+                            <h2 className="mb-3 text-lg font-semibold">Abilities</h2>
+                            <div className="flex flex-wrap gap-2">
+                                {data.abilities?.map((ability) => (
+                                    <Badge key={ability.ability.name} variant="outline" className="capitalize">
+                                        {ability.ability.name.replace(/-/g, " ")}
+                                        {ability.is_hidden ? " (hidden)" : ""}
+                                    </Badge>
+                                ))}
                             </div>
-                            <div className="mt-2">
-                                <em className={"font-bold"}>Weight:</em> {data?.weight / 10}kg <br/>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card className="w-[69%]">
-                        <CardContent>
-                            <h1>Pokemon Card 2</h1>
-                        </CardContent>
-                    </Card>
-                </CardContent>
-            </Card>
-        </>
-    )
+                        </section>
+                    </CardContent>
+                </Card>
+            </CardContent>
+        </Card>
+    );
 }

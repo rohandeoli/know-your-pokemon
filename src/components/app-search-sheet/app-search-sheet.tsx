@@ -9,11 +9,12 @@ import {
     SheetTitle,
 } from "@/components/ui/sheet"
 import Pokemon from "@/components/pokemon/pokemon.tsx";
+import type {Pokemon as PokemonModel} from "@/model/pokemon.ts";
 
 export default function AppSearchSheet({searchSheetOpen, setSearchSheetOpen, pokemon, error}: {
     searchSheetOpen: boolean,
     setSearchSheetOpen: (open: boolean) => void,
-    pokemon: any,
+    pokemon: PokemonModel | null,
     error?: { status?: number, message?: string }
 }) {
 
@@ -56,9 +57,9 @@ export default function AppSearchSheet({searchSheetOpen, setSearchSheetOpen, pok
                                 {error.message || 'An error occurred while fetching the results'}
                             </p>
                         </div>
-                    ) : (
+                    ) : pokemon ? (
                         <Pokemon pokemon={pokemon} isSearch={true}/>
-                    )}
+                    ) : null}
 
                 </div>
                 <SheetFooter>

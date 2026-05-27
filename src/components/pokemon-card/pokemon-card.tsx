@@ -3,6 +3,8 @@ import {Badge} from "@/components/ui/badge.tsx";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
 import {pokemonSprite} from "@/lib/utils.ts";
 import type {Pokemon, PokemonSpecies} from "@/model/pokemon.ts";
+import PokemonEvolutionChain from "@/components/pokemon-evolution-chain/pokemon-evolution-chain.tsx";
+import PokemonTypeMatchups from "@/components/pokemon-type-matchups/pokemon-type-matchups.tsx";
 
 const STAT_LABELS: Record<string, string> = {
     "hp": "HP",
@@ -147,8 +149,14 @@ export default function PokemonCard({data, species}: { data: Pokemon | null, spe
                                 ))}
                             </div>
                         </section>
+
+                        <PokemonTypeMatchups types={data.types?.map((t) => t.type.name) ?? []} />
                     </CardContent>
                 </Card>
+                
+                {species?.evolution_chain?.url && (
+                    <PokemonEvolutionChain url={species.evolution_chain.url} />
+                )}
             </CardContent>
         </Card>
     );

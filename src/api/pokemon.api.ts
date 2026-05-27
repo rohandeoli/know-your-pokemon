@@ -1,5 +1,5 @@
 import type {PokemonList} from "@/model/pokemon-list.ts";
-import type {Pokemon, PokemonSpecies} from "@/model/pokemon.ts";
+import type {Pokemon, PokemonSpecies, EvolutionChain, TypeDetail} from "@/model/pokemon.ts";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -34,4 +34,13 @@ export function getPokemon(id: string): Promise<Pokemon> {
 
 export function getPokemonSpecies(id: string | number): Promise<PokemonSpecies> {
     return getJson<PokemonSpecies>(`/pokemon-species/${id}`);
+}
+
+export function getEvolutionChain(url: string): Promise<EvolutionChain> {
+    const path = url.replace(API_URL, "");
+    return getJson<EvolutionChain>(path);
+}
+
+export function getTypeDetail(name: string): Promise<TypeDetail> {
+    return getJson<TypeDetail>(`/type/${name}`);
 }

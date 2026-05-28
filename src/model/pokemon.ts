@@ -28,6 +28,15 @@ export interface PokemonAbility {
     slot: number;
 }
 
+export interface PokemonMove {
+    move: NamedResource;
+    version_group_details: {
+        move_learn_method: NamedResource;
+        version_group: NamedResource;
+        level_learned_at: number;
+    }[];
+}
+
 export interface Pokemon {
     id: number;
     name: string;
@@ -39,6 +48,26 @@ export interface Pokemon {
     stats: PokemonStat[];
     abilities: PokemonAbility[];
     species: NamedResource;
+    moves: PokemonMove[];
+    cries: {
+        latest: string;
+        legacy: string | null;
+    };
+}
+
+export interface LocationAreaEncounter {
+    location_area: NamedResource;
+    version_details: {
+        version: NamedResource;
+        max_chance: number;
+        encounter_details: {
+            min_level: number;
+            max_level: number;
+            method: NamedResource;
+            chance: number;
+            condition_values: NamedResource[];
+        }[];
+    }[];
 }
 
 export interface FlavorTextEntry {

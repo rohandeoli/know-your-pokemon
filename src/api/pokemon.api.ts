@@ -1,5 +1,7 @@
 import type {PokemonList} from "@/model/pokemon-list.ts";
-import type {Pokemon, PokemonSpecies, EvolutionChain, TypeDetail} from "@/model/pokemon.ts";
+import type {Pokemon, PokemonSpecies, EvolutionChain, TypeDetail, LocationAreaEncounter} from "@/model/pokemon.ts";
+import type {Item, ResourceList} from "@/model/item.ts";
+import type {Generation, VersionGroup, Version} from "@/model/game.ts";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -32,6 +34,10 @@ export function getPokemon(id: string): Promise<Pokemon> {
     return getJson<Pokemon>(`/pokemon/${id}`);
 }
 
+export function getPokemonEncounters(id: string): Promise<LocationAreaEncounter[]> {
+    return getJson<LocationAreaEncounter[]>(`/pokemon/${id}/encounters`);
+}
+
 export function getPokemonSpecies(id: string | number): Promise<PokemonSpecies> {
     return getJson<PokemonSpecies>(`/pokemon-species/${id}`);
 }
@@ -43,4 +49,28 @@ export function getEvolutionChain(url: string): Promise<EvolutionChain> {
 
 export function getTypeDetail(name: string): Promise<TypeDetail> {
     return getJson<TypeDetail>(`/type/${name}`);
+}
+
+export function getItemList(offset = 0, limit = 20): Promise<ResourceList> {
+    return getJson<ResourceList>(`/item?offset=${offset}&limit=${limit}`);
+}
+
+export function getItem(idOrName: string | number): Promise<Item> {
+    return getJson<Item>(`/item/${idOrName}`);
+}
+
+export function getGenerationList(): Promise<ResourceList> {
+    return getJson<ResourceList>(`/generation`);
+}
+
+export function getGeneration(idOrName: string | number): Promise<Generation> {
+    return getJson<Generation>(`/generation/${idOrName}`);
+}
+
+export function getVersionGroup(idOrName: string | number): Promise<VersionGroup> {
+    return getJson<VersionGroup>(`/version-group/${idOrName}`);
+}
+
+export function getVersion(idOrName: string | number): Promise<Version> {
+    return getJson<Version>(`/version/${idOrName}`);
 }
